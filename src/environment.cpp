@@ -61,8 +61,14 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     //ProcessPointClouds<pcl::PointXYZ> pointProcessor = new ProcessPointClouds<pcl::PointXYZ>();
     //ProcessPointClouds<pcl::PointXYZI> pointProcessor = new ProcessPointClouds<pcl::PointXYZI>();
     
-    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor.SegmentPlane(inputCloud,100,0.2);
-    //std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud=pointProcessor->SegmentPlane(inputCloud,100,0.2);
+
+    //std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor.SegmentPlane(inputCloud,100,0.2);
+    //std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor->SegmentPlane(inputCloud,100,0.2);
+
+    //Ransac plane with newly created RansacPlane function, use plane and point formulas.
+    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor.RansacPlane(inputCloud,100,0.25);
+    //when distanceThreshold is set to 0.2 there will case that plane point are segment into obstacle point, finally I choose o.25, It's OK when I try it.
+
     renderPointCloud(viewer, segmentCloud.first, "obsCloud", Color(1,0,0));
     renderPointCloud(viewer, segmentCloud.second,"planeCloud",Color(0,1,0));
   
