@@ -51,7 +51,7 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud = lidar->scan();
     //Generate this PCL point cloud, PCL::pointXYZ pointer, 
     //renderRays(viewer,lidar->position, inputCloud);
-    renderPointCloud(viewer, inputCloud, "inputCloud");
+    //renderPointCloud(viewer, inputCloud, "inputCloud");
 
     // TODO:: Create point processor
     //Instantiate on the stack
@@ -69,8 +69,25 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> segmentCloud = pointProcessor.RansacPlane(inputCloud,100,0.25);
     //when distanceThreshold is set to 0.2 there will case that plane point are segment into obstacle point, finally I choose o.25, It's OK when I try it.
 
-    renderPointCloud(viewer, segmentCloud.first, "obsCloud", Color(1,0,0));
-    renderPointCloud(viewer, segmentCloud.second,"planeCloud",Color(0,1,0));
+    //renderPointCloud(viewer, segmentCloud.first, "obsCloud", Color(1,0,0));
+    //renderPointCloud(viewer, segmentCloud.second,"planeCloud",Color(0,1,0));
+
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudClusters = pointProcessor.Clustering(segmentCloud.first, 2.0, 3, 30);
+
+    int clusterId = 0;
+    std::vector<Color> colors = {Color(1,0,0), Color(1,1,0), Color(0,0,1)};
+
+    for(pcl::PointCloud<pcl::PointXYZ>::Ptr cluster : cloudClusters)
+    {
+        std::cout << "cluster size ";
+        pointProcessor.numPoints(cluster);
+        renderPointCloud(viewer,cluster,"obstCloud"+std::to_string(clusterId),colors[clusterId%colors.size()]);
+
+        //Box box = pointProcessor.BoundingBox(cluster);
+        //renderBox(viewer,box,clusterId);
+
+        ++clusterId;
+    }
   
 }
 
@@ -106,6 +123,7 @@ int main (int argc, char** argv)
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     CameraAngle setAngle = XY;
     initCamera(setAngle, viewer);
+
     simpleHighway(viewer);
 
     while (!viewer->wasStopped ())
