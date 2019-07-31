@@ -136,14 +136,10 @@ std::unordered_set<int> Ransac3D(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int 
   
   // TODO: Fill in this function
 
-  // For max iterations 
-
-  // Randomly sample subset and fit line
-
-  // Measure distance between every point and fitted line
-  // If distance is smaller than threshold count it as inlier
-
-  // Return indicies of inliers from fitted line with most inliers
+  // For max iterations, Randomly sample subset and fit plane, 
+  // Measure distance between every point and fitted plane,
+  // If distance is smaller than threshold count it as inlier,
+  // Return indicies of inliers from fitted plane with most inliers
 
   // Time segmentation process
   auto startTime = std::chrono::steady_clock::now();
