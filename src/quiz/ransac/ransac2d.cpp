@@ -116,12 +116,11 @@ std::unordered_set<int> Ransac(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int ma
 
     if(inliers.size()>inliersResult.size())
       inliersResult = inliers;
-
-    auto endTime = std::chrono::steady_clock::now();
-    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
-    std::cout << "Ransac took " << elapsedTime.count() << " milliseconds" << std::endl;
-
   }
+
+  auto endTime = std::chrono::steady_clock::now();
+  auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+  std::cout << "Ransac took " << elapsedTime.count() << " milliseconds" << std::endl;
 	
 	return inliersResult;
   // Return indicies of inliers from fitted line with most inliers
@@ -188,14 +187,14 @@ std::unordered_set<int> Ransac3D(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int 
     }
 
     if(inliers.size()>inliersResult.size())
-      inliersResult = inliers;
-
-    auto endTime = std::chrono::steady_clock::now();
-    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
-    std::cout << "Ransac took " << elapsedTime.count() << " milliseconds" << std::endl;
+      inliersResult = inliers;    
 
   }
   
+  auto endTime = std::chrono::steady_clock::now();
+  auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+  std::cout << "Ransac took " << elapsedTime.count() << " milliseconds" << std::endl;
+
   return inliersResult;
   // Return indicies of inliers from fitted line with most inliers
 
@@ -234,7 +233,7 @@ int main ()
 	if(inliers.size())
 	{
 		renderPointCloud(viewer,cloudInliers,"inliers",Color(0,1,0));
-  		renderPointCloud(viewer,cloudOutliers,"outliers",Color(1,0,0));
+  	renderPointCloud(viewer,cloudOutliers,"outliers",Color(1,0,0));
 	}
   	else
   	{

@@ -33,7 +33,7 @@ struct KdTree
 		else
 		{
 			//Calculate current dim
-			uint cd = depth%2;
+			uint cd = depth%2; //use 3 if we are working in 3 dimension(x,y,z) kdtree
 			if(point[cd]<((*node)->point[cd]))
 				insertHelper(&((*node)->left),depth+1,point,id);
 			else
@@ -52,10 +52,13 @@ struct KdTree
 	void searchHelper(std::vector<float> target, Node* node,int depth, float distanceTol, std::vector<int>& ids)
 	{
 		if(node!=NULL)
-		{
+		{	
+			//Below check 3 dimensions if we are working in 3 dimension(x,y,z) kdtree
 			if((node->point[0]>=(target[0]-distanceTol)&&node->point[0]<=(target[0]+distanceTol)) && (node->point[1]>=(target[1]-distanceTol)&&node->point[1]<=(target[1]+distanceTol)))
 			{
-				float distance = sqrt((node->point[0]-target[0])*(node->point[0]-target[0])+(node->point[1]-target[1])*(node->point[1]-target[1]));
+				float distance = sqrt(pow((node->point[0]-target[0]),2)+pow((node->point[1]-target[1]),2));
+				//this calculation change a little bit in a 3d environment.
+				
 				if(distanceTol<=distanceTol)
 					ids.push_back(node->id);
 			}

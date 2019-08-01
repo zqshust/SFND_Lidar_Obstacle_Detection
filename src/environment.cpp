@@ -114,6 +114,7 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 }
 
 /*
+//Process loaded single frame pcd file
 void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   // ----------------------------------------------------
@@ -170,6 +171,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
 }
 */
 
+// Process streamline pcd file
 void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointClouds<pcl::PointXYZI>* pointProcessorI, pcl::PointCloud<pcl::PointXYZI>::Ptr& inputCloud)
 {
   // ----------------------------------------------------
@@ -178,7 +180,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
     // RENDER OPTIONS
     bool render_PointCloud = true;
     bool render_obst = false;
-    bool render_plane = true;
+    bool render_plane = false;
 
     bool render_clusters = true;
     bool render_box = true;
@@ -189,17 +191,27 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
 
     inputCloud = pointProcessorI->FilterCloud(inputCloud,0.3,Eigen::Vector4f(-10,-6,-3,1),Eigen::Vector4f(30,6,4,1));
 
-    
-    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr,pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentCloud = pointProcessorI->SegmentPlane(inputCloud,100,0.2);
-    //std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr,pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentCloud = pointProcessorI->RansacPlane(inputCloud,100,0.25);
+    //use PCL segmentation algorithm
+    //std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr,pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentCloud = pointProcessorI->SegmentPlane(inputCloud,100,0.2);
+    //use self-generated 3D RANSAC segmentation algorithm  
+    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr,pcl::PointCloud<pcl::PointXYZI>::Ptr> segmentCloud = pointProcessorI->RansacPlane(inputCloud,100,0.2);
     
     if(render_obst)
         renderPointCloud(viewer, segmentCloud.first, "obsCloud", Color(1,0,0));
     if(render_plane)
         renderPointCloud(viewer, segmentCloud.second,"planeCloud",Color(0,1,0));
 
-    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = pointProcessorI->Clustering(segmentCloud.first, 0.5, 8, 300);
-  
+    //use PCL clustering algorithm
+    //std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = pointProcessorI->Clustering(segmentCloud.first, 0.5, 8, 300);
+    
+    //use self-generated clustering algorithm along with the KD-Tree 
+    KdTree* tree = new KdTree;
+
+    for (int i = 0; i < segmentCloud.first->points.size(); i++)
+        tree->insert(segmentCloud.first->points[i], i);
+    
+    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = pointProcessorI->euclideanCluster(segmentCloud.first, tree, 0.35, 8, 300);
+    
     int clusterId = 0;
     std::vector<Color> colors = {Color(1,0,0), Color(1,1,0), Color(0,0,1)};
 
